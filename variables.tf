@@ -1,142 +1,109 @@
-# proxmox variables
-variable "pm_api_url" {
-  description = "proxmox api url"
-  type        = string
-}
-variable "pm_api_token_secret" {
-  sensitive   = true
-  description = "proxmox api token secret"
-  type        = string
-}
-variable "pm_api_token_id" {
-  description = "proxmox api token id"
-  type        = string
-}
-variable "vm_template_name" {
-  description = "proxmox VM template name"
-  type        = string
-}
+# proxmox config
 variable "pm_target_node" {
-  description = "proxmox target node"
+  description = "Required The name of the Proxmox Node on which to place the VM"
   type        = string
-}
-variable "vm_tags" {
-  type    = string
-  default = "proxmox-vm"
 }
 
-# VM variables
-variable "node_count" {
-  description = "Number of virtual servers to create"
+# Cluster config
+variable "cluster_name" {
+  description = "Required The name of the VM within Proxmox"
+  type        = string
+}
+variable "cluster_node_count" {
+  description = "Number of vm to create"
   type        = number
 }
-variable "cluster_name" {
-  description = "VM prefix name"
+# VMs 
+# VMs config optional
+variable "vm_template_name" {
+  description = "proxmox vm tempalte name"
   type        = string
-  default     = "cluster"
 }
-variable "vm_onboot" {
-  type        = bool
-  description = "Start the VM right after Proxmox host starts"
-  default     = true
+variable "vm_os_type" {
+  description = "VMs os type"
+  type        = string
+  default     = "ubuntu"
 }
 variable "vm_bootdisk" {
-  description = "vm boot disk"
+  description = "VM boot os disk"
   type        = string
   default     = "virtio0"
 }
-
-# User
 variable "vm_user" {
-  description = "VM user"
   type        = string
+  description = "user name of vms"
 }
 variable "vm_user_password" {
-  description = "vm_user passwork"
+  description = "user password"
   type        = string
   sensitive   = true
 }
-variable "ssh_key" {
+variable "vm_user_sshkey" {
   description = "vm_user sshkey"
-  sensitive   = true
   type        = string
-}
-variable "ssh_key_location" {
   sensitive   = true
-  description = "ssh location"
-  type        = string
 }
-
-# RAM CPU
 variable "vm_memory" {
-  description = "VM Ram in MB"
+  description = "vm memory on MB"
   type        = number
-  default     = 4096
+  default     = 2048
 }
 variable "vm_cpu_type" {
-  description = "The type of CPU to emulate in the Guest"
+  description = "Type of CPU "
   type        = string
   default     = "host"
 }
 variable "vm_vcpu" {
-  description = "the number of CPU cores to allocate to the VM"
+  description = "Number of CPU core alocate to VM"
   type        = number
   default     = 2
 }
-
-# Network
-
-# vm_host_number is a whole number that can be represented as a binary integer 
-# with no more than the number of digits remaining in the address after the given prefix. 
-# If hostnum is negative, the count starts from the end of the range. 
-# For example, cidrhost("10.0.0.0/8", 2) returns 10.0.0.2 and cidrhost("10.0.0.0/8", -2) returns 10.255.255.254.
-# ex: 
-# cird: 192.168.1.0/24
-# vm_host_number = 150
-# ip range 192.168.150, 192.168.151, 192.168.152
+# VMs network
 variable "vm_host_number" {
+  description = "The host number VMs in CIDR"
   type        = number
-  description = "The host number of the VM in the subnet"
 }
 variable "vm_network_cidr" {
-  description = "netwrok cidr"
   type        = string
-
+  description = "CIDR of VMs network"
 }
 
-# Disk
-variable "vm_os_disk_size" {
-  description = "VM os disk size"
-  type        = number
-}
-variable "vm_os_disk_location" {
-  description = "Disk storeage location on proxmox"
+# VMs disk
+variable "vm_cloudinit_cdrom_storage" {
+  description = "Set the storage location for the cloud-init drive"
   type        = string
   default     = "local-lvm"
 }
-
+variable "vm_os_disk_size" {
+  description = "vm os disk size"
+  type        = number
+  default     = 20
+}
+variable "vm_os_disk_location" {
+  description = "vm os disk location on proxmox"
+  type        = string
+}
 variable "vm_data_disk_size" {
-  description = "VM data disk size"
+  description = "vm data disk size"
   type        = number
 }
 variable "vm_data_disk_location" {
-  description = "Disk storeage location on proxmox"
+  description = "vm data disk location on proxmox"
   type        = string
-  default     = "local-lvm"
+}
+variable "vm_tags" {
+  description = "tag for vm"
+  type = string
 }
 
-#
-variable "use_legacy_naming_convention" {
-  description = "Version <= 3.x, set it to `true`"
-  type    = bool
-  default = false
-}
-
-# local variable
-# g
+# get data for vms
 locals {
-  # get vm net subnet mask ex: 192.168.0.1/24 > /24
+  # get vm subnet mask from variable network cidr. EX cird = 192.168.1.0/24 return 24
   vm_net_subnet_mask = "/${split("/", var.vm_network_cidr)[1]}"
-  # get default gateway from cird: > 192.168.1.1
-  vm_net_default_gw  = cidrhost(var.vm_network_cidr, 1)
+  # get default gateway from variable network cidr. EX cidr p 192.168.1.0/24 return 192.168.1.1
+  vm_net_default_gw = cidrhost(var.vm_network_cidr, 1)
 }
+
+
+
+

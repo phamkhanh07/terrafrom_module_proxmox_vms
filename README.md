@@ -1,25 +1,23 @@
-Terraform module for create proxmox vms
-use vm template created from ubuntu 22.04 cloud-init image
-provider: Telmate/proxmox version = "3.0.1-rc1"
+Create proxmox cluster and out cluster informaitons
+variables:
 
-module output:
-list of dict cluster created
-```
-vms_info = [
-  {
-    "vm_ip" = "x.x.x.x"
-    "vm_name" = "node-name-num"
-    "vm_user" = "vm_user_name"
-  },
-  {
-    "vm_ip" = "x.x.x.x"
-    "vm_name" = "node-name-num"
-    "vm_user" = "vm_user_name"
-  },
-  {
-    "vm_ip" = "x.x.x.x"
-    "vm_name" = "node-name-num"
-    "vm_user" = "vm_user_name"
-  },
-]
-```
+pm_target_node
+cluster_name
+cluster_node_count
+vm_template_name
+vm_os_type
+vm_bootdisk
+vm_user
+vm_user_password
+vm_user_sshkey
+vm_memory
+vm_cpu_type
+vm_vcpu
+vm_host_number
+vm_network_cidr
+vm_cloudinit_cdrom_storage
+vm_os_disk_size
+vm_os_disk_location
+vm_data_disk_size
+vm_data_disk_location
+vm_tags
